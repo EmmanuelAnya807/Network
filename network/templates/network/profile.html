@@ -1,0 +1,90 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+    <h2>{{ user.username }}</h2>
+    <div class="user_details">
+        {% if user == request.user %}
+            <p>Following: {{ following_count }}</p>
+            <p>Followers: {{ followers_count }}</p>
+
+        {% else %}
+            <p>Following: {{ following_count }}</p>
+            <p>Followers: {{ followers_count }}</p>
+            {% if not is_following %}
+                <form action="{% url 'follow' user.username %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-primary" type="submit">Follow <i class="bi bi-hand-thumbs-up"></i></button>
+                </form>
+
+            {% else %}
+                <form action="{% url 'unfollow' user.username %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-dark" type="submit">Unfollow <i class="bi bi-hand-thumbs-down"></i></button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% if posts %}
+        {% for post in posts %}
+            <article class="posts">
+                <div class="media-body">
+                    <div class="article-metadata d-flex justify-content-between align-items-center">
+                        <a class="mr-2 font-weight-bold text-decoration-none text-dark" href="{% url 'profile' post.author.username %}">{{ post.author }}</a>
+                        <small class="text-muted">{{ post.timestamp| date:'F d, Y' }}</small>
+                    </div>
+                    {% if request.user == post.author %}
+                        <a href="#" data-post-id='{{ post.id }}' class="mr-2 font-weight-bold text-decoration-none edit-post">Edit</a>
+                    {% endif %}
+                    <p class="article-content" id="post-content-{{ post.id }}">{{ post.content }}</p>
+
+                    {% if post.user_liked %}
+                        <small>
+                            <i class="bi bi-heart-fill text-danger like-post" data-post-id='{{ post.id }}'></i>
+                            <small class="like-count" data-post-id='{{ post.id }}'>{{ post.likes.count }}</small>
+                        </small>
+                    {% else %}
+                        <small>
+                            <i class="bi bi-heart text-danger like-post" data-post-id='{{ post.id }}'></i>
+                            <small class="like-count" data-post-id='{{ post.id }}'>{{ post.likes.count }}</small>
+                        </small>
+                    {% endif %}
+
+                    {% if request.user == post.author %}
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary d-none save-post" data-post-id='{{ post.id }}' type="button">Save</button>
+                        </div>
+                    {% endif %}
+                </div>
+            </article>
+        {% endfor %}
+
+    {% else %}
+        <h3>No posts by this user.</h3>
+
+    {% endif %}
+
+
+    {% if posts.paginator.num_pages > 1 %}
+
+        {% if posts.has_previous %}
+            <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ posts.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        {% for num in posts.paginator.page_range %}
+            {% if posts.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if posts.has_next %}
+            <a class="btn btn-outline-info mb-4" href="?page={{ posts.next_page_number }}">Next</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ posts.paginator.num_pages }}">Last</a>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}

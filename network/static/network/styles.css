@@ -1,0 +1,31 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css");
+
+.posts {
+    padding: 20px;
+    margin: 20px;
+    border: 1px solid gray;
+    border-radius: 5px;
+}
+
+.posts textarea {
+    min-height: 100px;
+}
+
+.article-metadata {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between !important;
+    margin-bottom: 10px;
+}
+
+.user_details {
+    background-color: green;
+    color: white;
+    padding: 20px;
+    margin: 20px;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start !important;
+    margin-bottom: 10px;
+    gap: 70px;
+}
